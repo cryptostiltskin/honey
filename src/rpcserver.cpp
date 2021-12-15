@@ -602,13 +602,13 @@ void StopRPCThreads()
     delete rpc_io_service; rpc_io_service = NULL;
 }
 
-void RPCRunHandler(const boost::system::error_code& err, boost::function<void(void)> func)
+void RPCRunHandler(const boost::system::error_code& err, std::function<void(void)> func)
 {
     if (!err)
         func();
 }
 
-void RPCRunLater(const std::string& name, boost::function<void(void)> func, int64_t nSeconds)
+void RPCRunLater(const std::string& name, std::function<void(void)> func, int64_t nSeconds)
 {
     assert(rpc_io_service != NULL);
 

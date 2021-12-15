@@ -497,8 +497,8 @@ inline uint32_t ByteReverse(uint32_t value)
 // Use it like:
 //   new boost::thread(boost::bind(&LoopForever<void (*)()>, "dumpaddr", &DumpAddresses, 900000));
 // or maybe:
-//    boost::function<void()> f = boost::bind(&FunctionWithArg, argument);
-//    threadGroup.create_thread(boost::bind(&LoopForever<boost::function<void()> >, "nothing", f, milliseconds));
+//    std::function<void()> f = boost::bind(&FunctionWithArg, argument);
+//    threadGroup.create_thread(boost::bind(&LoopForever<std::function<void()> >, "nothing", f, milliseconds));
 template <typename Callable> void LoopForever(const char* name,  Callable func, int64_t msecs)
 {
     std::string s = strprintf("honey-%s", name);
