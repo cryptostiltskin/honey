@@ -5,11 +5,11 @@
 
 #include <rpcprotocol.h>
 #include <util.h>
+#include <fs.h>
 
 #include <stdint.h>
 
 #include <boost/algorithm/string.hpp>
-#include <boost/filesystem.hpp>
 
 #include <json/json_spirit_writer_template.h>
 #include <fstream>
@@ -249,9 +249,9 @@ json_spirit::Object JSONRPCError(int code, const std::string& message)
  /** Default name for auth cookie file */
  static const std::string COOKIEAUTH_FILE = "cookie";
 
- boost::filesystem::path GetAuthCookieFile()
+ fs::path GetAuthCookieFile()
  {
-     boost::filesystem::path path(GetArg("-rpccookiefile", COOKIEAUTH_FILE));
+     fs::path path(GetArg("-rpccookiefile", COOKIEAUTH_FILE));
      if (!path.is_complete()) path = GetDataDir() / path;
      return path;
  }
@@ -265,7 +265,7 @@ json_spirit::Object JSONRPCError(int code, const std::string& message)
       /* these are set to 077 in init.cpp unless overridden with -sysperms.
       */
      std::ofstream file;
-     boost::filesystem::path filepath = GetAuthCookieFile();
+     fs::path filepath = GetAuthCookieFile();
      file.open(filepath.string().c_str());
      if (!file.is_open()) {
          LogPrintf("Unable to open cookie authentication file %s for writing\n", filepath.string());
@@ -284,7 +284,7 @@ json_spirit::Object JSONRPCError(int code, const std::string& message)
  {
      std::ifstream file;
      std::string cookie;
-     boost::filesystem::path filepath = GetAuthCookieFile();
+     fs::path filepath = GetAuthCookieFile();
      file.open(filepath.string().c_str());
      if (!file.is_open())
          return false;
@@ -299,8 +299,8 @@ json_spirit::Object JSONRPCError(int code, const std::string& message)
  void DeleteAuthCookie()
  {
      try {
-         boost::filesystem::remove(GetAuthCookieFile());
-     } catch (const boost::filesystem::filesystem_error& e) {
+         fs::remove(GetAuthCookieFile());
+     } catch (const fs::filesystem_error& e) {
          LogPrintf("%s: Unable to remove random auth cookie file: %s\n", __func__, e.what());
      }
  }

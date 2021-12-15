@@ -5,6 +5,7 @@
 #include <QApplication>
 
 #include <honeygui.h>
+#include <fs.h>
 #include <clientmodel.h>
 #include <walletmodel.h>
 #include <optionsmodel.h>
@@ -156,7 +157,7 @@ int main(int argc, char *argv[])
     ParseParameters(argc, argv);
 
     // ... then honey.conf:
-    if (!boost::filesystem::is_directory(GetDataDir(false)))
+    if (!fs::is_directory(GetDataDir(false)))
     {
         // This message can not be translated, as translation is not initialized yet
         // (which not yet possible because lang=XX can be overridden in honey.conf in the data directory)

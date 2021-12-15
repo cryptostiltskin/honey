@@ -10,6 +10,7 @@
 #include <ui_interface.h>
 #include <uint256.h>
 #include <version.h>
+#include <fs.h>
 
 #include <algorithm>
 
@@ -21,8 +22,6 @@
 
 #include <boost/program_options/detail/config_file.hpp>
 #include <boost/program_options/parsers.hpp>
-#include <boost/filesystem.hpp>
-#include <boost/filesystem/fstream.hpp>
 #include <boost/thread.hpp>
 #include <openssl/crypto.h>
 #include <openssl/rand.h>
@@ -225,7 +224,7 @@ static void DebugPrintInit()
     assert(fileout == NULL);
     assert(mutexDebugLog == NULL);
 
-    boost::filesystem::path pathDebug = GetDataDir() / "debug.log";
+    fs::path pathDebug = GetDataDir() / "debug.log";
     fileout = fopen(pathDebug.string().c_str(), "a");
     if (fileout) setbuf(fileout, NULL); // unbuffered
 
@@ -281,7 +280,7 @@ int LogPrintStr(const std::string &str)
         // reopen the log file, if requested
         if (fReopenDebugLog) {
             fReopenDebugLog = false;
-            boost::filesystem::path pathDebug = GetDataDir() / "debug.log";
+            fs::path pathDebug = GetDataDir() / "debug.log";
             if (freopen(pathDebug.string().c_str(),"a",fileout) != NULL)
                 setbuf(fileout, NULL); // unbuffered
         }
@@ -956,7 +955,7 @@ void PrintExceptionContinue(std::exception* pex, const char* pszThread)
     strMiscWarning = message;
 }
 
-boost::filesystem::path GetDefaultDataDir()
+fs::path GetDefaultDataDir()
 {    // Windows < Vista: C:\Documents and Settings\Username\Application Data\Honey
     // Windows >= Vista: C:\Users\Username\AppData\Roaming\Honey
     // Mac: ~/Library/Application Support/Honey
@@ -965,16 +964,16 @@ boost::filesystem::path GetDefaultDataDir()
     // Windows
     return GetSpecialFolderPath(CSIDL_APPDATA) / "Honey";
 #else
-    boost::filesystem::path pathRet;
+    fs::path pathRet;
     char* pszHome = getenv("HOME");
     if (pszHome == NULL || strlen(pszHome) == 0)
-        pathRet = boost::filesystem::path("/");
+        pathRet = fs::path("/");
     else
-        pathRet = boost::filesystem::path(pszHome);
+        pathRet = fs::path(pszHome);
 #ifdef MAC_OSX
     // Mac
     pathRet /= "Library/Application Support";
-    boost::filesystem::create_directory(pathRet);
+    fs::create_directory(pathRet);
     return pathRet / "Honey";
 #else
     // Unix
@@ -983,17 +982,17 @@ boost::filesystem::path GetDefaultDataDir()
 #endif
 }
 
-static boost::filesystem::path pathCached[CChainParams::MAX_NETWORK_TYPES+1];
+static fs::path pathCached[CChainParams::MAX_NETWORK_TYPES+1];
 static CCriticalSection csPathCached;
 
-const boost::filesystem::path &GetDataDir(bool fNetSpecific)
+const fs::path &GetDataDir(bool fNetSpecific)
 {
     LOCK(csPathCached);
 
     int nNet = CChainParams::MAX_NETWORK_TYPES;
     if (fNetSpecific) nNet = Params().NetworkID();
 
-    boost::filesystem::path &path = pathCached[nNet];
+    fs::path &path = pathCached[nNet];
 
     // This can be called during exceptions by LogPrintf(), so we cache the
     // value so we don't have to do memory allocations after that.
@@ -1001,8 +1000,8 @@ const boost::filesystem::path &GetDataDir(bool fNetSpecific)
         return path;
 
     if (mapArgs.count("-datadir")) {
-        path = boost::filesystem::system_complete(mapArgs["-datadir"]);
-        if (!boost::filesystem::is_directory(path)) {
+        path = fs::system_complete(mapArgs["-datadir"]);
+        if (!fs::is_directory(path)) {
             path = "";
             return path;
         }
@@ -1012,7 +1011,7 @@ const boost::filesystem::path &GetDataDir(bool fNetSpecific)
     if (fNetSpecific)
         path /= Params().DataDir();
 
-    boost::filesystem::create_directory(path);
+    fs::create_directory(path);
 
     return path;
 }
@@ -1020,12 +1019,12 @@ const boost::filesystem::path &GetDataDir(bool fNetSpecific)
 void ClearDatadirCache()
 {
     std::fill(&pathCached[0], &pathCached[CChainParams::MAX_NETWORK_TYPES+1],
-              boost::filesystem::path());
+              fs::path());
 }
 
-boost::filesystem::path GetConfigFile()
+fs::path GetConfigFile()
 {
-    boost::filesystem::path pathConfigFile(GetArg("-conf", "honey.conf"));
+    fs::path pathConfigFile(GetArg("-conf", "honey.conf"));
     if (!pathConfigFile.is_complete()) pathConfigFile = GetDataDir(false) / pathConfigFile;
     return pathConfigFile;
 }
@@ -1034,7 +1033,7 @@ void ReadConfigFile(std::map<std::string, std::string>& mapSettingsRet,
                     std::map<std::string, std::vector<std::string> >& mapMultiSettingsRet)
 {
 
-    boost::filesystem::ifstream streamConfig(GetConfigFile());
+    fs::ifstream streamConfig(GetConfigFile());
     if (!streamConfig.good())
     {
         return;
@@ -1059,15 +1058,15 @@ void ReadConfigFile(std::map<std::string, std::string>& mapSettingsRet,
     ClearDatadirCache();
 }
 
-boost::filesystem::path GetPidFile()
+fs::path GetPidFile()
 {
-    boost::filesystem::path pathPidFile(GetArg("-pid", "honeyd.pid"));
+    fs::path pathPidFile(GetArg("-pid", "honeyd.pid"));
     if (!pathPidFile.is_complete()) pathPidFile = GetDataDir() / pathPidFile;
     return pathPidFile;
 }
 
 #ifndef WIN32
-void CreatePidFile(const boost::filesystem::path &path, pid_t pid)
+void CreatePidFile(const fs::path &path, pid_t pid)
 {
     FILE* file = fopen(path.string().c_str(), "w");
     if (file)
@@ -1078,7 +1077,7 @@ void CreatePidFile(const boost::filesystem::path &path, pid_t pid)
 }
 #endif
 
-bool RenameOver(boost::filesystem::path src, boost::filesystem::path dest)
+bool RenameOver(fs::path src, fs::path dest)
 {
 #ifdef WIN32
     return MoveFileExA(src.string().c_str(), dest.string().c_str(),
@@ -1102,9 +1101,9 @@ void FileCommit(FILE *fileout)
 void ShrinkDebugFile()
 {
     // Scroll debug.log if it's getting too big
-    boost::filesystem::path pathLog = GetDataDir() / "debug.log";
+    fs::path pathLog = GetDataDir() / "debug.log";
     FILE* file = fopen(pathLog.string().c_str(), "r");
-    if (file && boost::filesystem::file_size(pathLog) > 10 * 1000000)
+    if (file && fs::file_size(pathLog) > 10 * 1000000)
     {
         // Restart the file with some of the end
         char pch[200000];
@@ -1182,17 +1181,17 @@ std::string FormatSubVersion(const std::string& name, int nClientVersion, const 
 }
 
 #ifdef WIN32
-boost::filesystem::path GetSpecialFolderPath(int nFolder, bool fCreate)
+fs::path GetSpecialFolderPath(int nFolder, bool fCreate)
 {
     char pszPath[MAX_PATH] = "";
 
     if(SHGetSpecialFolderPathA(NULL, pszPath, nFolder, fCreate))
     {
-        return boost::filesystem::path(pszPath);
+        return fs::path(pszPath);
     }
 
     LogPrintf("SHGetSpecialFolderPathA() failed, could not obtain requested path.\n");
-    return boost::filesystem::path("");
+    return fs::path("");
 }
 #endif
 

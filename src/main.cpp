@@ -4,7 +4,6 @@
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #include <boost/algorithm/string/replace.hpp>
-#include <boost/filesystem.hpp>
 #include <boost/signals2/signal.hpp>
 #include <boost/bind/bind.hpp>
 
@@ -12,6 +11,7 @@
 #include <chainparams.h>
 #include <checkpoints.h>
 #include <db.h>
+#include <fs.h>
 #include <init.h>
 #include <kernel.h>
 #include <net.h>
@@ -2386,7 +2386,7 @@ bool CBlock::CheckBlockSignature() const
 
 bool CheckDiskSpace(uint64_t nAdditionalBytes)
 {
-    uint64_t nFreeBytesAvailable = boost::filesystem::space(GetDataDir()).available;
+    uint64_t nFreeBytesAvailable = fs::space(GetDataDir()).available;
 
     // Check for nMinDiskSpace bytes (currently 50MB)
     if (nFreeBytesAvailable < nMinDiskSpace + nAdditionalBytes)
@@ -2401,7 +2401,7 @@ bool CheckDiskSpace(uint64_t nAdditionalBytes)
     return true;
 }
 
-static boost::filesystem::path BlockFilePath(unsigned int nFile)
+static fs::path BlockFilePath(unsigned int nFile)
 {
     std::string strBlockFn = strprintf("blk%04u.dat", nFile);
     return GetDataDir() / strBlockFn;
@@ -2636,25 +2636,25 @@ struct CImportingNow
     }
 };
 
-void ThreadImport(std::vector<boost::filesystem::path> vImportFiles)
+void ThreadImport(std::vector<fs::path> vImportFiles)
 {
     RenameThread("honey-loadblk");
 
     CImportingNow imp;
 
     // -loadblock=
-    for (boost::filesystem::path &path : vImportFiles) {
+    for (fs::path &path : vImportFiles) {
         FILE *file = fopen(path.string().c_str(), "rb");
         if (file)
             LoadExternalBlockFile(file);
     }
 
     // hardcoded $DATADIR/bootstrap.dat
-    boost::filesystem::path pathBootstrap = GetDataDir() / "bootstrap.dat";
-    if (boost::filesystem::exists(pathBootstrap)) {
+    fs::path pathBootstrap = GetDataDir() / "bootstrap.dat";
+    if (fs::exists(pathBootstrap)) {
         FILE *file = fopen(pathBootstrap.string().c_str(), "rb");
         if (file) {
-            boost::filesystem::path pathBootstrapOld = GetDataDir() / "bootstrap.dat.old";
+            fs::path pathBootstrapOld = GetDataDir() / "bootstrap.dat.old";
             LoadExternalBlockFile(file);
             RenameOver(pathBootstrap, pathBootstrapOld);
         }

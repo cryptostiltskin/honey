@@ -13,7 +13,6 @@
 #include <sys/stat.h>
 #endif
 
-#include <boost/filesystem.hpp>
 #include <boost/thread.hpp>
 
 #include <openssl/rand.h>
@@ -60,7 +59,7 @@ void CDBEnv::Close()
     EnvShutdown();
 }
 
-bool CDBEnv::Open(boost::filesystem::path pathEnv_)
+bool CDBEnv::Open(fs::path pathEnv_)
 {
     if (fDbEnvInit)
         return true;
@@ -68,11 +67,11 @@ bool CDBEnv::Open(boost::filesystem::path pathEnv_)
     boost::this_thread::interruption_point();
 
     pathEnv = pathEnv_;
-    boost::filesystem::path pathDataDir = pathEnv;
+    fs::path pathDataDir = pathEnv;
     strPath = pathDataDir.string();
-    boost::filesystem::path pathLogDir = pathDataDir / "database";
-    boost::filesystem::create_directory(pathLogDir);
-    boost::filesystem::path pathErrorFile = pathDataDir / "db.log";
+    fs::path pathLogDir = pathDataDir / "database";
+    fs::create_directory(pathLogDir);
+    fs::path pathErrorFile = pathDataDir / "db.log";
     LogPrintf("dbenv.open LogDir=%s ErrorFile=%s\n", pathLogDir.string(), pathErrorFile.string());
 
     unsigned int nEnvFlags = 0;

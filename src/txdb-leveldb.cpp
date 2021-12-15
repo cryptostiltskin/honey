@@ -5,8 +5,6 @@
 
 #include <map>
 
-#include <boost/filesystem.hpp>
-#include <boost/filesystem/fstream.hpp>
 #include <boost/thread.hpp>
 
 #include <leveldb/env.h>
@@ -19,6 +17,7 @@
 #include <util.h>
 #include <main.h>
 #include <chainparams.h>
+#include <fs.h>
 
 
 leveldb::DB *txdb; // global pointer for LevelDB object instance
@@ -33,32 +32,32 @@ static leveldb::Options GetOptions() {
 
 static void init_blockindex(leveldb::Options& options, bool fRemoveOld = false, bool fCreateBootstrap = false) {
     // First time init.
-    boost::filesystem::path directory = GetDataDir() / "txleveldb";
+    fs::path directory = GetDataDir() / "txleveldb";
 
     if (fRemoveOld) {
-        boost::filesystem::remove_all(directory); // remove directory
+        fs::remove_all(directory); // remove directory
         unsigned int nFile = 1;
-        boost::filesystem::path bootstrap = GetDataDir() / "bootstrap.dat";
+        fs::path bootstrap = GetDataDir() / "bootstrap.dat";
 
         while (true)
         {
-            boost::filesystem::path strBlockFile = GetDataDir() / strprintf("blk%04u.dat", nFile);
+            fs::path strBlockFile = GetDataDir() / strprintf("blk%04u.dat", nFile);
 
             // Break if no such file
-            if( !boost::filesystem::exists( strBlockFile ) )
+            if( !fs::exists( strBlockFile ) )
                 break;
 
-            if (fCreateBootstrap && nFile == 1 && !boost::filesystem::exists(bootstrap)) {
-                boost::filesystem::rename(strBlockFile, bootstrap);
+            if (fCreateBootstrap && nFile == 1 && !fs::exists(bootstrap)) {
+                fs::rename(strBlockFile, bootstrap);
             } else {
-                boost::filesystem::remove(strBlockFile);
+                fs::remove(strBlockFile);
             }
 
             nFile++;
         }
     }
 
-    boost::filesystem::create_directory(directory);
+    fs::create_directory(directory);
     LogPrintf("Opening LevelDB in %s\n", directory.string());
     leveldb::Status status = leveldb::DB::Open(options, directory.string(), &txdb);
     if (!status.ok()) {

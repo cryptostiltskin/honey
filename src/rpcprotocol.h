@@ -7,16 +7,17 @@
 #define _HONEYRPC_PROTOCOL_H_ 1
 
 #include <compat.h>
+#include <fs.h>
 
 #include <list>
 #include <map>
 #include <stdint.h>
 #include <string>
+
 #include <boost/iostreams/concepts.hpp>
 #include <boost/iostreams/stream.hpp>
 #include <boost/asio.hpp>
 #include <boost/asio/ssl.hpp>
-#include <boost/filesystem.hpp>
 
 #include <json/json_spirit_reader_template.h>
 #include <json/json_spirit_utils.h>
@@ -145,7 +146,7 @@ std::string JSONRPCReply(const json_spirit::Value& result, const json_spirit::Va
 json_spirit::Object JSONRPCError(int code, const std::string& message);
 
 /** Get name of RPC authentication cookie file */
-boost::filesystem::path GetAuthCookieFile();
+fs::path GetAuthCookieFile();
 /** Generate a new RPC authentication cookie and write it to disk */
 bool GenerateAuthCookie(std::string *cookie_out);
 /** Read the RPC authentication cookie from disk */

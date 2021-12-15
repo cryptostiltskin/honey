@@ -6,6 +6,8 @@
 #include <rpcserver.h>
 #include <rpcclient.h>
 #include <init.h>
+#include <fs.h>
+
 #include <boost/algorithm/string/predicate.hpp>
 #include <boost/thread.hpp>
 
@@ -41,7 +43,7 @@ bool AppInit(int argc, char* argv[])
         //
         // If Qt is used, parameters/honey.conf are parsed in qt/honey.cpp's main()
         ParseParameters(argc, argv);
-        if (!boost::filesystem::is_directory(GetDataDir(false)))
+        if (!fs::is_directory(GetDataDir(false)))
         {
             fprintf(stderr, "Error: Specified directory does not exist\n");
             Shutdown();

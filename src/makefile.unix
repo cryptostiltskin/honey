@@ -105,6 +105,7 @@ OBJS= \
     obj/addrman.o \
     obj/base58.o \
     obj/crypter.o \
+    obj/fs.o \
     obj/key.o \
     obj/init.o \
     obj/honeyd.o \

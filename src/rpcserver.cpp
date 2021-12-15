@@ -11,6 +11,7 @@
 #include <sync.h>
 #include <base58.h>
 #include <db.h>
+#include <fs.h>
 #include <ui_interface.h>
 #ifdef ENABLE_WALLET
 #include <wallet.h>
@@ -21,8 +22,6 @@
 #include <boost/asio/ip/v6_only.hpp>
 #include <boost/asio/ssl.hpp>
 #include <boost/bind/bind.hpp>
-#include <boost/filesystem.hpp>
-#include <boost/filesystem/fstream.hpp>
 #include <boost/iostreams/concepts.hpp>
 #include <boost/iostreams/stream.hpp>
 #include <boost/shared_ptr.hpp>
@@ -511,14 +510,14 @@ void StartRPCThreads()
     {
         rpc_ssl_context->set_options(boost::asio::ssl::context::no_sslv2);
 
-        boost::filesystem::path pathCertFile(GetArg("-rpcsslcertificatechainfile", "server.cert"));
-        if (!pathCertFile.is_complete()) pathCertFile = boost::filesystem::path(GetDataDir()) / pathCertFile;
-        if (boost::filesystem::exists(pathCertFile)) rpc_ssl_context->use_certificate_chain_file(pathCertFile.string());
+        fs::path pathCertFile(GetArg("-rpcsslcertificatechainfile", "server.cert"));
+        if (!pathCertFile.is_complete()) pathCertFile = fs::path(GetDataDir()) / pathCertFile;
+        if (fs::exists(pathCertFile)) rpc_ssl_context->use_certificate_chain_file(pathCertFile.string());
         else LogPrintf("ThreadRPCServer ERROR: missing server certificate file %s\n", pathCertFile.string());
 
-        boost::filesystem::path pathPKFile(GetArg("-rpcsslprivatekeyfile", "server.pem"));
-        if (!pathPKFile.is_complete()) pathPKFile = boost::filesystem::path(GetDataDir()) / pathPKFile;
-        if (boost::filesystem::exists(pathPKFile)) rpc_ssl_context->use_private_key_file(pathPKFile.string(), boost::asio::ssl::context::pem);
+        fs::path pathPKFile(GetArg("-rpcsslprivatekeyfile", "server.pem"));
+        if (!pathPKFile.is_complete()) pathPKFile = fs::path(GetDataDir()) / pathPKFile;
+        if (fs::exists(pathPKFile)) rpc_ssl_context->use_private_key_file(pathPKFile.string(), boost::asio::ssl::context::pem);
         else LogPrintf("ThreadRPCServer ERROR: missing server private key file %s\n", pathPKFile.string());
 
         std::string strCiphers = GetArg("-rpcsslciphers", "TLSv1.2+HIGH:TLSv1+HIGH:!SSLv2:!aNULL:!eNULL:!3DES:@STRENGTH");

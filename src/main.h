@@ -6,6 +6,7 @@
 #define HONEY_MAIN_H
 
 #include <core.h>
+#include <fs.h>
 #include <sync.h>
 #include <txmempool.h>
 #include <net.h>
@@ -123,7 +124,7 @@ void PrintBlockTree();
 CBlockIndex* FindBlockByHeight(int nHeight);
 bool ProcessMessages(CNode* pfrom);
 bool SendMessages(CNode* pto, bool fSendTrickle);
-void ThreadImport(std::vector<boost::filesystem::path> vImportFiles);
+void ThreadImport(std::vector<fs::path> vImportFiles);
 
 bool CheckProofOfWork(uint256 hash, unsigned int nBits);
 unsigned int GetNextTargetRequired(const CBlockIndex* pindexLast, bool fProofOfStake);

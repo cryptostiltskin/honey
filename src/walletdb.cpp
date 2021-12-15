@@ -10,9 +10,7 @@
 #include <serialize.h>
 #include <sync.h>
 #include <wallet.h>
-
-#include <boost/filesystem.hpp>
-
+#include <fs.h>
 
 
 static uint64_t nAccountingEntryNumber = 0;
@@ -735,16 +733,16 @@ bool BackupWallet(const CWallet& wallet, const std::string& strDest)
                 bitdb.mapFileUseCount.erase(wallet.strWalletFile);
 
                 // Copy wallet.dat
-                boost::filesystem::path pathSrc = GetDataDir() / wallet.strWalletFile;
-                boost::filesystem::path pathDest(strDest);
-                if (boost::filesystem::is_directory(pathDest))
+                fs::path pathSrc = GetDataDir() / wallet.strWalletFile;
+                fs::path pathDest(strDest);
+                if (fs::is_directory(pathDest))
                     pathDest /= wallet.strWalletFile;
 
                 try {
-                    boost::filesystem::copy_file(pathSrc, pathDest, boost::filesystem::copy_option::overwrite_if_exists);
+                    fs::copy_file(pathSrc, pathDest, fs::copy_option::overwrite_if_exists);
                     LogPrintf("copied wallet.dat to %s\n", pathDest.string());
                     return true;
-                } catch(const boost::filesystem::filesystem_error &e) {
+                } catch(const fs::filesystem_error &e) {
                     LogPrintf("error copying wallet.dat to %s - %s\n", pathDest.string(), e.what());
                     return false;
                 }

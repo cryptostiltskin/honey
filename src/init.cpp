@@ -6,6 +6,7 @@
 #include <init.h>
 #include <main.h>
 #include <chainparams.h>
+#include <fs.h>
 #include <txdb.h>
 #include <rpcserver.h>
 #include <net.h>
@@ -16,9 +17,6 @@
 #include <walletdb.h>
 #endif
 
-#include <boost/filesystem.hpp>
-#include <boost/filesystem/fstream.hpp>
-#include <boost/filesystem/convenience.hpp>
 #include <boost/interprocess/sync/file_lock.hpp>
 #include <boost/algorithm/string/predicate.hpp>
 #include <boost/thread.hpp>
@@ -109,7 +107,7 @@ void Shutdown()
     if (pwalletMain)
         bitdb.Flush(true);
 #endif
-    boost::filesystem::remove(GetPidFile());
+    fs::remove(GetPidFile());
     UnregisterAllWallets();
 #ifdef ENABLE_WALLET
     delete pwalletMain;
@@ -451,11 +449,11 @@ bool AppInit2(boost::thread_group& threadGroup)
     std::string strWalletFileName = GetArg("-wallet", "wallet.dat");
 
     // strWalletFileName must be a plain filename without a directory
-    if (strWalletFileName != boost::filesystem::basename(strWalletFileName) + boost::filesystem::extension(strWalletFileName))
+    if (strWalletFileName != fs::basename(strWalletFileName) + fs::extension(strWalletFileName))
         return InitError(strprintf(_("Wallet %s resides outside data directory %s."), strWalletFileName, strDataDir));
 #endif
     // Make sure only a single Honey process is using the data directory.
-    boost::filesystem::path pathLockFile = GetDataDir() / ".lock";
+    fs::path pathLockFile = GetDataDir() / ".lock";
     FILE* file = fopen(pathLockFile.string().c_str(), "a"); // empty lock file; created if it doesn't exist.
     if (file) fclose(file);
     static boost::interprocess::file_lock lock(pathLockFile.string().c_str());
@@ -486,12 +484,12 @@ bool AppInit2(boost::thread_group& threadGroup)
         if (!bitdb.Open(GetDataDir()))
         {
             // try moving the database env out of the way
-            boost::filesystem::path pathDatabase = GetDataDir() / "database";
-            boost::filesystem::path pathDatabaseBak = GetDataDir() / strprintf("database.%d.bak", GetTime());
+            fs::path pathDatabase = GetDataDir() / "database";
+            fs::path pathDatabaseBak = GetDataDir() / strprintf("database.%d.bak", GetTime());
             try {
-                boost::filesystem::rename(pathDatabase, pathDatabaseBak);
+                fs::rename(pathDatabase, pathDatabaseBak);
                 LogPrintf("Moved old %s to %s. Retrying.\n", pathDatabase.string(), pathDatabaseBak.string());
-            } catch(boost::filesystem::filesystem_error &error) {
+            } catch(fs::filesystem_error &error) {
                  // failure is ok (well, not really, but it's not worse than what we started with)
             }
 
@@ -510,7 +508,7 @@ bool AppInit2(boost::thread_group& threadGroup)
                 return false;
         }
 
-        if (boost::filesystem::exists(GetDataDir() / strWalletFileName))
+        if (fs::exists(GetDataDir() / strWalletFileName))
         {
             CDBEnv::VerifyResult r = bitdb.Verify(strWalletFileName, CWalletDB::Recover);
             if (r == CDBEnv::RECOVER_OK)
@@ -778,7 +776,7 @@ bool AppInit2(boost::thread_group& threadGroup)
 #endif // !ENABLE_WALLET
     // ********************************************************* Step 9: import blocks
 
-    std::vector<boost::filesystem::path> vImportFiles;
+    std::vector<fs::path> vImportFiles;
     if (mapArgs.count("-loadblock"))
     {
         for (std::string strFile : mapMultiArgs["-loadblock"])

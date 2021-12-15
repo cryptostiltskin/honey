@@ -5,6 +5,7 @@
 
 #include <chainparams.h>
 #include <db.h>
+#include <fs.h>
 #include <net.h>
 #include <main.h>
 #include <addrman.h>
@@ -16,7 +17,6 @@
 
 #include <boost/thread.hpp>
 #include <boost/bind/bind.hpp>
-#include <boost/filesystem.hpp>
 
 #ifdef USE_UPNP
 #include <miniupnpc/miniwget.h>
@@ -1771,7 +1771,7 @@ bool CAddrDB::Write(const CAddrMan& addr)
     ssPeers << hash;
 
     // open temp output file, and associate with CAutoFile
-    boost::filesystem::path pathTmp = GetDataDir() / tmpfn;
+    fs::path pathTmp = GetDataDir() / tmpfn;
     FILE *file = fopen(pathTmp.string().c_str(), "wb");
     CAutoFile fileout = CAutoFile(file, SER_DISK, CLIENT_VERSION);
     if (!fileout)
@@ -1803,7 +1803,7 @@ bool CAddrDB::Read(CAddrMan& addr)
         return error("CAddrman::Read() : open failed");
 
     // use file size to size memory buffer
-    int fileSize = boost::filesystem::file_size(pathAddr);
+    int fileSize = fs::file_size(pathAddr);
     int dataSize = fileSize - sizeof(uint256);
     // Don't try to resize to a negative number if file is small
     if ( dataSize < 0 ) dataSize = 0;

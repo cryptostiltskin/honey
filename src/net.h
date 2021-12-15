@@ -20,6 +20,7 @@
 #include <protocol.h>
 #include <addrman.h>
 #include <hash.h>
+#include <fs.h>
 
 class CNode;
 class CBlockIndex;
@@ -675,7 +676,7 @@ void RelayTransaction(const CTransaction& tx, const uint256& hash, const CDataSt
 class CAddrDB
 {
 private:
-    boost::filesystem::path pathAddr;
+    fs::path pathAddr;
 public:
     CAddrDB();
     bool Write(const CAddrMan& addr);
