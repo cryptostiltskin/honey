@@ -78,7 +78,7 @@ namespace Checkpoints
             if (t != mapBlockIndex.end())
                 return t->second;
         }
-        return NULL;
+        return nullptr;
     }
 
     // Automatically select a suitable sync-checkpoint

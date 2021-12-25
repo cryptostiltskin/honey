@@ -128,7 +128,7 @@ void CDBEnv::MakeMock()
 #ifdef DB_LOG_IN_MEMORY
     dbenv.log_set_config(DB_LOG_IN_MEMORY, 1);
 #endif
-    int ret = dbenv.open(NULL,
+    int ret = dbenv.open(nullptr,
                      DB_CREATE     |
                      DB_INIT_LOCK  |
                      DB_INIT_LOG   |
@@ -150,10 +150,10 @@ CDBEnv::VerifyResult CDBEnv::Verify(std::string strFile, bool (*recoverFunc)(CDB
     assert(mapFileUseCount.count(strFile) == 0);
 
     Db db(&dbenv, 0);
-    int result = db.verify(strFile.c_str(), NULL, NULL, 0);
+    int result = db.verify(strFile.c_str(), nullptr, nullptr, 0);
     if (result == 0)
         return VERIFY_OK;
-    else if (recoverFunc == NULL)
+    else if (recoverFunc == nullptr)
         return RECOVER_FAIL;
 
     // Try to recover:
@@ -173,7 +173,7 @@ bool CDBEnv::Salvage(std::string strFile, bool fAggressive,
     std::stringstream strDump;
 
     Db db(&dbenv, 0);
-    int result = db.verify(strFile.c_str(), NULL, &strDump, flags);
+    int result = db.verify(strFile.c_str(), nullptr, &strDump, flags);
     if (result == DB_VERIFY_BAD)
     {
         LogPrintf("Error: Salvage found errors, all data may not be recoverable.\n");
@@ -226,7 +226,7 @@ void CDBEnv::CheckpointLSN(const std::string& strFile)
 
 
 CDB::CDB(const std::string& strFilename, const char* pszMode) :
-    pdb(NULL), activeTxn(NULL)
+    pdb(nullptr), activeTxn(nullptr)
 {
     int ret;
     fReadOnly = (!strchr(pszMode, '+') && !strchr(pszMode, 'w'));
@@ -246,7 +246,7 @@ CDB::CDB(const std::string& strFilename, const char* pszMode) :
         strFile = strFilename;
         ++bitdb.mapFileUseCount[strFile];
         pdb = bitdb.mapDb[strFile];
-        if (pdb == NULL)
+        if (pdb == nullptr)
         {
             pdb = new Db(&bitdb.dbenv, 0);
 
@@ -259,8 +259,8 @@ CDB::CDB(const std::string& strFilename, const char* pszMode) :
                     throw std::runtime_error(strprintf("CDB : Failed to configure for no temp file backing for database %s", strFile));
             }
 
-            ret = pdb->open(NULL, // Txn pointer
-                            fMockDb ? NULL : strFile.c_str(), // Filename
+            ret = pdb->open(nullptr, // Txn pointer
+                            fMockDb ? nullptr : strFile.c_str(), // Filename
                             fMockDb ? strFile.c_str() : "main", // Logical db name
                             DB_BTREE, // Database type
                             nFlags, // Flags
@@ -269,7 +269,7 @@ CDB::CDB(const std::string& strFilename, const char* pszMode) :
             if (ret != 0)
             {
                 delete pdb;
-                pdb = NULL;
+                pdb = nullptr;
                 --bitdb.mapFileUseCount[strFile];
                 strFile = "";
                 throw std::runtime_error(strprintf("CDB : Error %d, can't open database %s", ret, strFile));
@@ -294,8 +294,8 @@ void CDB::Close()
         return;
     if (activeTxn)
         activeTxn->abort();
-    activeTxn = NULL;
-    pdb = NULL;
+    activeTxn = nullptr;
+    pdb = nullptr;
 
     // Flush database activity from memory pool to disk log
     unsigned int nMinutes = 0;
@@ -314,13 +314,13 @@ void CDBEnv::CloseDb(const std::string& strFile)
 {
     {
         LOCK(cs_db);
-        if (mapDb[strFile] != NULL)
+        if (mapDb[strFile] != nullptr)
         {
             // Close the database handle
             Db* pdb = mapDb[strFile];
             pdb->close(0);
             delete pdb;
-            mapDb[strFile] = NULL;
+            mapDb[strFile] = nullptr;
         }
     }
 }
@@ -330,7 +330,7 @@ bool CDBEnv::RemoveDb(const std::string& strFile)
     this->CloseDb(strFile);
 
     LOCK(cs_db);
-    int rc = dbenv.dbremove(NULL, strFile.c_str(), NULL, DB_AUTO_COMMIT);
+    int rc = dbenv.dbremove(nullptr, strFile.c_str(), nullptr, DB_AUTO_COMMIT);
     return (rc == 0);
 }
 
@@ -354,7 +354,7 @@ bool CDB::Rewrite(const std::string& strFile, const char* pszSkip)
                     CDB db(strFile.c_str(), "r");
                     Db* pdbCopy = new Db(&bitdb.dbenv, 0);
 
-                    int ret = pdbCopy->open(NULL,                 // Txn pointer
+                    int ret = pdbCopy->open(nullptr,                 // Txn pointer
                                             strFileRes.c_str(),   // Filename
                                             "main",    // Logical db name
                                             DB_BTREE,  // Database type
@@ -395,7 +395,7 @@ bool CDB::Rewrite(const std::string& strFile, const char* pszSkip)
                             }
                             Dbt datKey(&ssKey[0], ssKey.size());
                             Dbt datValue(&ssValue[0], ssValue.size());
-                            int ret2 = pdbCopy->put(NULL, &datKey, &datValue, DB_NOOVERWRITE);
+                            int ret2 = pdbCopy->put(nullptr, &datKey, &datValue, DB_NOOVERWRITE);
                             if (ret2 > 0)
                                 fSuccess = false;
                         }
@@ -411,10 +411,10 @@ bool CDB::Rewrite(const std::string& strFile, const char* pszSkip)
                 if (fSuccess)
                 {
                     Db dbA(&bitdb.dbenv, 0);
-                    if (dbA.remove(strFile.c_str(), NULL, 0))
+                    if (dbA.remove(strFile.c_str(), nullptr, 0))
                         fSuccess = false;
                     Db dbB(&bitdb.dbenv, 0);
-                    if (dbB.rename(strFileRes.c_str(), NULL, strFile.c_str(), 0))
+                    if (dbB.rename(strFileRes.c_str(), nullptr, strFile.c_str(), 0))
                         fSuccess = false;
                 }
                 if (!fSuccess)

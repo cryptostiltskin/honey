@@ -16,7 +16,7 @@
 
 // Key used by getwork/getblocktemplate miners.
 // Allocated in InitRPCMining, free'd in ShutdownRPCMining
-static CReserveKey* pMiningKey = NULL;
+static CReserveKey* pMiningKey = nullptr;
 
 void InitRPCMining()
 {
@@ -32,7 +32,7 @@ void ShutdownRPCMining()
     if (!pMiningKey)
         return;
 
-    delete pMiningKey; pMiningKey = NULL;
+    delete pMiningKey; pMiningKey = nullptr;
 }
 
 json_spirit::Value getsubsidy(const json_spirit::Array& params, bool fHelp)
@@ -354,7 +354,7 @@ json_spirit::Value getworkex(const json_spirit::Array& params, bool fHelp)
 
         pblock->hashMerkleRoot = pblock->BuildMerkleTree();
 
-        assert(pwalletMain != NULL);
+        assert(pwalletMain != nullptr);
         return CheckWork(pblock, *pwalletMain, *pMiningKey);
     }
 }
@@ -405,7 +405,7 @@ json_spirit::Value getwork(const json_spirit::Array& params, bool fHelp)
             }
 
             // Clear pindexPrev so future getworks make a new block, despite any failures from here on
-            pindexPrev = NULL;
+            pindexPrev = nullptr;
 
             // Store the pindexBest used before CreateNewBlock, to avoid races
             nTransactionsUpdatedLast = mempool.GetTransactionsUpdated();
@@ -470,7 +470,7 @@ json_spirit::Value getwork(const json_spirit::Array& params, bool fHelp)
         pblock->vtx[0].vin[0].scriptSig = mapNewBlock[pdata->hashMerkleRoot].second;
         pblock->hashMerkleRoot = pblock->BuildMerkleTree();
 
-        assert(pwalletMain != NULL);
+        assert(pwalletMain != nullptr);
         return CheckWork(pblock, *pwalletMain, *pMiningKey);
     }
 }
@@ -534,7 +534,7 @@ json_spirit::Value getblocktemplate(const json_spirit::Array& params, bool fHelp
         (mempool.GetTransactionsUpdated() != nTransactionsUpdatedLast && GetTime() - nStart > 5))
     {
         // Clear pindexPrev so future calls make a new block, despite any failures from here on
-        pindexPrev = NULL;
+        pindexPrev = nullptr;
 
         // Store the pindexBest used before CreateNewBlock, to avoid races
         nTransactionsUpdatedLast = mempool.GetTransactionsUpdated();
@@ -545,7 +545,7 @@ json_spirit::Value getblocktemplate(const json_spirit::Array& params, bool fHelp
         if(pblock)
         {
             delete pblock;
-            pblock = NULL;
+            pblock = nullptr;
         }
         pblock = CreateNewBlock(*pMiningKey);
         if (!pblock)
@@ -686,7 +686,7 @@ json_spirit::Value submitblock(const json_spirit::Array& params, bool fHelp)
         }
     }
 
-    bool fAccepted = ProcessBlock(NULL, &block);
+    bool fAccepted = ProcessBlock(nullptr, &block);
     if (!fAccepted)
         return "rejected";
 

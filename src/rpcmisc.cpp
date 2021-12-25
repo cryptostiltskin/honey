@@ -50,7 +50,7 @@ json_spirit::Value getinfo(const json_spirit::Array& params, bool fHelp)
     obj.push_back(json_spirit::Pair("moneysupply",   ValueFromAmount(pindexBest->nMoneySupply)));
     obj.push_back(json_spirit::Pair("connections",   (int)vNodes.size()));
     obj.push_back(json_spirit::Pair("proxy",         (proxy.IsValid() ? proxy.ToStringIPPort() : std::string())));
-    obj.push_back(json_spirit::Pair("ip",            GetLocalAddress(NULL).ToStringIP()));
+    obj.push_back(json_spirit::Pair("ip",            GetLocalAddress(nullptr).ToStringIP()));
 
     diff.push_back(json_spirit::Pair("proof-of-work",  GetDifficulty()));
     diff.push_back(json_spirit::Pair("proof-of-stake", GetDifficulty(GetLastBlockIndex(pindexBest, true))));

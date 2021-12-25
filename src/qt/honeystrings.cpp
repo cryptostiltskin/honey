@@ -120,7 +120,7 @@ QT_TRANSLATE_NOOP("honey-core", "Use OpenSSL (https) for JSON-RPC connections"),
 QT_TRANSLATE_NOOP("honey-core", "Server certificate file (default: server.cert)"),
 QT_TRANSLATE_NOOP("honey-core", "Server private key (default: server.pem)"),
 QT_TRANSLATE_NOOP("honey-core", ""
-"Acceptable ciphers (default: TLSv1.2+HIGH:TLSv1+HIGH:!SSLv2:!aNULL:!eNULL:!"
+"Acceptable ciphers (default: TLSv1.2+HIGH:TLSv1+HIGH:!SSLv2:!anullptr:!enullptr:!"
 "3DES:@STRENGTH)"),
 QT_TRANSLATE_NOOP("honey-core", "Warning: Deprecated argument -debugnet ignored, use -debug=net"),
 QT_TRANSLATE_NOOP("honey-core", ""

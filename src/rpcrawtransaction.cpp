@@ -174,7 +174,7 @@ json_spirit::Value listunspent(const json_spirit::Array& params, bool fHelp)
 
     json_spirit::Array results;
     std::vector<COutput> vecOutputs;
-    assert(pwalletMain != NULL);
+    assert(pwalletMain != nullptr);
     pwalletMain->AvailableCoins(vecOutputs, false);
     for (const COutput& out : vecOutputs)
     {
@@ -583,7 +583,7 @@ json_spirit::Value sendrawtransaction(const json_spirit::Array& params, bool fHe
     else
     {
         // push to local node
-        if (!AcceptToMemoryPool(mempool, tx, true, NULL))
+        if (!AcceptToMemoryPool(mempool, tx, true, nullptr))
             throw JSONRPCError(RPC_DESERIALIZATION_ERROR, "TX rejected");
     }
     RelayTransaction(tx, hashTx);

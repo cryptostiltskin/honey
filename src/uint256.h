@@ -503,7 +503,7 @@ public:
     //
     // This implementation directly uses shifts instead of going
     // through an intermediate MPI representation.
-    uint256 &SetCompact(uint32_t nCompact, bool *pfNegative = NULL, bool *pfOverflow = NULL)
+    uint256 &SetCompact(uint32_t nCompact, bool *pfNegative = nullptr, bool *pfOverflow = nullptr)
     {
         int nSize = nCompact >> 24;
         uint32_t nWord = nCompact & 0x007fffff;

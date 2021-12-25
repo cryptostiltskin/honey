@@ -104,7 +104,7 @@ void UnregisterWallet(CWalletInterface* pwalletIn);
 /** Unregister all wallets from core */
 void UnregisterAllWallets();
 /** Push an updated transaction to all registered wallets */
-void SyncWithWallets(const CTransaction& tx, const CBlock* pblock = NULL, bool fConnect = true);
+void SyncWithWallets(const CTransaction& tx, const CBlock* pblock = nullptr, bool fConnect = true);
 /** Ask wallets to resend their transactions */
 void ResendWalletTransactions(bool fForce = false);
 
@@ -302,7 +302,7 @@ public:
      */
     int64_t GetValueIn(const MapPrevTx& mapInputs) const;
 
-    bool ReadFromDisk(CDiskTxPos pos, FILE** pfileRet=NULL)
+    bool ReadFromDisk(CDiskTxPos pos, FILE** pfileRet=nullptr)
     {
         CAutoFile filein = CAutoFile(OpenBlockFile(pos.nFile, 0, pfileRet ? "rb+" : "rb"), SER_DISK, CLIENT_VERSION);
         if (!filein)
@@ -488,7 +488,7 @@ public:
     )
 
 
-    int SetMerkleBranch(const CBlock* pblock=NULL);
+    int SetMerkleBranch(const CBlock* pblock=nullptr);
 
     // Return depth of transaction in blockchain:
     // -1  : not in blockchain, and not in memory pool (conflicted transaction)
@@ -889,9 +889,9 @@ public:
 
     CBlockIndex()
     {
-        phashBlock = NULL;
-        pprev = NULL;
-        pnext = NULL;
+        phashBlock = nullptr;
+        pprev = nullptr;
+        pnext = nullptr;
         nFile = 0;
         nBlockPos = 0;
         nHeight = 0;
@@ -914,9 +914,9 @@ public:
 
     CBlockIndex(unsigned int nFileIn, unsigned int nBlockPosIn, CBlock& block)
     {
-        phashBlock = NULL;
-        pprev = NULL;
-        pnext = NULL;
+        phashBlock = nullptr;
+        pprev = nullptr;
+        pnext = nullptr;
         nFile = nFileIn;
         nBlockPos = nBlockPosIn;
         nHeight = 0;

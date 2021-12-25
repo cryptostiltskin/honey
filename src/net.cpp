@@ -31,7 +31,7 @@
 
 static const int MAX_OUTBOUND_CONNECTIONS = 16;
 
-bool OpenNetworkConnection(const CAddress& addrConnect, CSemaphoreGrant *grantOutbound = NULL, const char *strDest = NULL, bool fOneShot = false);
+bool OpenNetworkConnection(const CAddress& addrConnect, CSemaphoreGrant *grantOutbound = nullptr, const char *strDest = nullptr, bool fOneShot = false);
 
 
 struct LocalServiceInfo {
@@ -48,8 +48,8 @@ static CCriticalSection cs_mapLocalHost;
 static std::map<CNetAddr, LocalServiceInfo> mapLocalHost;
 static bool vfReachable[NET_MAX] = {};
 static bool vfLimited[NET_MAX] = {};
-static CNode* pnodeLocalHost = NULL;
-static CNode* pnodeSync = NULL;
+static CNode* pnodeLocalHost = nullptr;
+static CNode* pnodeSync = nullptr;
 uint64_t nLocalHostNonce = 0;
 static std::vector<SOCKET> vhListenSocket;
 CAddrMan addrman;
@@ -70,7 +70,7 @@ CCriticalSection cs_setservAddNodeAddresses;
 std::vector<std::string> vAddedNodes;
 CCriticalSection cs_vAddedNodes;
 
-static CSemaphore *semOutbound = NULL;
+static CSemaphore *semOutbound = nullptr;
 
 // Signals for message handling
 static CNodeSignals g_signals;
@@ -323,7 +323,7 @@ CNode* FindNode(const CNetAddr& ip)
             if ((CNetAddr)pnode->addr == ip)
                 return (pnode);
     }
-    return NULL;
+    return nullptr;
 }
 
 CNode* FindNode(const std::string& addrName)
@@ -332,7 +332,7 @@ CNode* FindNode(const std::string& addrName)
     for (CNode* pnode : vNodes)
         if (pnode->addrName == addrName)
             return (pnode);
-    return NULL;
+    return nullptr;
 }
 
 CNode* FindNode(const CService& addr)
@@ -343,14 +343,14 @@ CNode* FindNode(const CService& addr)
             if ((CService)pnode->addr == addr)
                 return (pnode);
     }
-    return NULL;
+    return nullptr;
 }
 
 CNode* ConnectNode(CAddress addrConnect, const char *pszDest)
 {
-    if (pszDest == NULL) {
+    if (pszDest == nullptr) {
         if (IsLocal(addrConnect))
-            return NULL;
+            return nullptr;
 
         // Look for an existing connection
         CNode* pnode = FindNode((CService)addrConnect);
@@ -404,7 +404,7 @@ CNode* ConnectNode(CAddress addrConnect, const char *pszDest)
         addrman.Attempt(addrConnect);
     }
 
-    return NULL;
+    return nullptr;
 }
 
 void CNode::CloseSocketDisconnect()
@@ -424,7 +424,7 @@ void CNode::CloseSocketDisconnect()
 
     // if this was the sync node, we'll need a new one
     if (this == pnodeSync)
-        pnodeSync = NULL;
+        pnodeSync = nullptr;
 }
 
 void CNode::PushVersion()
@@ -1045,7 +1045,7 @@ void ThreadMapPort()
 
 void MapPort(bool fUseUPnP)
 {
-    static boost::thread* upnp_thread = NULL;
+    static boost::thread* upnp_thread = nullptr;
 
     if (fUseUPnP)
     {
@@ -1060,7 +1060,7 @@ void MapPort(bool fUseUPnP)
         upnp_thread->interrupt();
         upnp_thread->join();
         delete upnp_thread;
-        upnp_thread = NULL;
+        upnp_thread = nullptr;
     }
 }
 
@@ -1167,7 +1167,7 @@ void ThreadOpenConnections()
             for (std::string strAddr : mapMultiArgs["-connect"])
             {
                 CAddress addr;
-                OpenNetworkConnection(addr, NULL, strAddr.c_str());
+                OpenNetworkConnection(addr, nullptr, strAddr.c_str());
                 for (int i = 0; i < 10 && i < nLoop; i++)
                 {
                     MilliSleep(500);
@@ -1364,7 +1364,7 @@ static int64_t NodeSyncScore(const CNode *pnode) {
 }
 
 void static StartSync(const std::vector<CNode*> &vNodes) {
-    CNode *pnodeNewSync = NULL;
+    CNode *pnodeNewSync = nullptr;
     int64_t nBestScore = 0;
 
     // fImporting and fReindex are accessed out of cs_main here, but only
@@ -1381,7 +1381,7 @@ void static StartSync(const std::vector<CNode*> &vNodes) {
             (pnode->nVersion < NOBLKS_VERSION_START || pnode->nVersion >= NOBLKS_VERSION_END)) {
             // if ok, compare node's score with the best so far
             int64_t nScore = NodeSyncScore(pnode);
-            if (pnodeNewSync == NULL || nScore > nBestScore) {
+            if (pnodeNewSync == nullptr || nScore > nBestScore) {
                 pnodeNewSync = pnode;
                 nBestScore = nScore;
             }
@@ -1416,7 +1416,7 @@ void ThreadMessageHandler()
             StartSync(vNodesCopy);
 
         // Poll the connected nodes for messages
-        CNode* pnodeTrickle = NULL;
+        CNode* pnodeTrickle = nullptr;
         if (!vNodesCopy.empty())
             pnodeTrickle = vNodesCopy[GetRand(vNodesCopy.size())];
 
@@ -1588,9 +1588,9 @@ void static Discover(boost::thread_group& threadGroup)
     struct ifaddrs* myaddrs;
     if (getifaddrs(&myaddrs) == 0)
     {
-        for (struct ifaddrs* ifa = myaddrs; ifa != NULL; ifa = ifa->ifa_next)
+        for (struct ifaddrs* ifa = myaddrs; ifa != nullptr; ifa = ifa->ifa_next)
         {
-            if (ifa->ifa_addr == NULL) continue;
+            if (ifa->ifa_addr == nullptr) continue;
             if ((ifa->ifa_flags & IFF_UP) == 0) continue;
             if (strcmp(ifa->ifa_name, "lo") == 0) continue;
             if (strcmp(ifa->ifa_name, "lo0") == 0) continue;
@@ -1617,13 +1617,13 @@ void static Discover(boost::thread_group& threadGroup)
 
 void StartNode(boost::thread_group& threadGroup)
 {
-    if (semOutbound == NULL) {
+    if (semOutbound == nullptr) {
         // initialize semaphore
         int nMaxOutbound = std::min(MAX_OUTBOUND_CONNECTIONS, (int)GetArg("-maxconnections", 125));
         semOutbound = new CSemaphore(nMaxOutbound);
     }
 
-    if (pnodeLocalHost == NULL)
+    if (pnodeLocalHost == nullptr)
         pnodeLocalHost = new CNode(INVALID_SOCKET, CAddress(CService("127.0.0.1", 0), nLocalServices));
 
     Discover(threadGroup);

@@ -91,7 +91,7 @@ CBlock* CreateNewBlock(CReserveKey& reservekey, bool fProofOfStake, int64_t* pFe
     // Create new block
     std::unique_ptr<CBlock> pblock(new CBlock());
     if (!pblock.get())
-        return NULL;
+        return nullptr;
 
     CBlockIndex* pindexPrev = pindexBest;
     int nHeight = pindexPrev->nHeight + 1;
@@ -106,7 +106,7 @@ CBlock* CreateNewBlock(CReserveKey& reservekey, bool fProofOfStake, int64_t* pFe
     {
         CPubKey pubkey;
         if (!reservekey.GetReservedKey(pubkey))
-            return NULL;
+            return nullptr;
         txNew.vout[0].scriptPubKey.SetDestination(pubkey.GetID());
     }
     else
@@ -161,7 +161,7 @@ CBlock* CreateNewBlock(CReserveKey& reservekey, bool fProofOfStake, int64_t* pFe
             if (tx.IsCoinBase() || tx.IsCoinStake() || !IsFinalTx(tx, nHeight))
                 continue;
 
-            COrphan* porphan = NULL;
+            COrphan* porphan = nullptr;
             int64_t nTotalIn = 0;
             bool fMissingInputs = false;
             for (const CTxIn& txin : tx.vin)
@@ -434,7 +434,7 @@ bool CheckWork(CBlock* pblock, CWallet& wallet, CReserveKey& reservekey)
         }
 
         // Process this block the same as if we had received it from another node
-        if (!ProcessBlock(NULL, pblock))
+        if (!ProcessBlock(nullptr, pblock))
             return error("CheckWork() : ProcessBlock, block not accepted");
     }
 
@@ -471,7 +471,7 @@ bool CheckStake(CBlock* pblock, CWallet& wallet)
         }
 
         // Process this block the same as if we had received it from another node
-        if (!ProcessBlock(NULL, pblock))
+        if (!ProcessBlock(nullptr, pblock))
             return error("CheckStake() : ProcessBlock, block not accepted");
     }
 

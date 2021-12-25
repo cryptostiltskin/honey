@@ -230,7 +230,7 @@ static bool CheckStakeKernelHashV2(CBlockIndex* pindexPrev, unsigned int nBits, 
     // Base target
     bool fOverflow = false;
     uint256 bnTarget;
-    bnTarget.SetCompact(nBits, NULL, &fOverflow);
+    bnTarget.SetCompact(nBits, nullptr, &fOverflow);
 
     // Weighted target
     int64_t nValueIn = txPrev.vout[prevout.n].nValue;

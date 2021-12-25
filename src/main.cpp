@@ -45,7 +45,7 @@ unsigned int nStakeMinAge = 6 * 60 * 60; // 6 hours
 unsigned int nModifierInterval = 5 * 60; // time to elapse before new modifier is computed
 
 int nCoinbaseMaturity = 5;
-CBlockIndex* pindexGenesisBlock = NULL;
+CBlockIndex* pindexGenesisBlock = nullptr;
 int nBestHeight = -1;
 
 static const int64_t nTargetTimespan = 5 * 60;  // 5 mins
@@ -54,7 +54,7 @@ uint256 nBestChainTrust = 0;
 uint256 nBestInvalidTrust = 0;
 
 uint256 hashBestChain = 0;
-CBlockIndex* pindexBest = NULL;
+CBlockIndex* pindexBest = nullptr;
 int64_t nTimeBestReceived = 0;
 bool fImporting = false;
 bool fReindex = false;
@@ -347,7 +347,7 @@ bool IsStandardTx(const CTransaction& tx, std::string& reason)
             reason = "scriptpubkey";
             return false;
         }
-        if (whichType == TX_NULL_DATA)
+        if (whichType == TX_nullptr_DATA)
             nDataOut++;
         else if (txout.nValue == 0) {
             reason = "dust";
@@ -489,7 +489,7 @@ int CMerkleTx::SetMerkleBranch(const CBlock* pblock)
     AssertLockHeld(cs_main);
 
     CBlock blockTmp;
-    if (pblock == NULL)
+    if (pblock == nullptr)
     {
         // Load the block this tx is in
         CTxIndex txindex;
@@ -744,7 +744,7 @@ bool AcceptToMemoryPool(CTxMemPool& pool, CTransaction &tx, bool fLimitFree,
     // Store transaction in memory
     pool.addUnchecked(hash, tx);
 
-    SyncWithWallets(tx, NULL);
+    SyncWithWallets(tx, nullptr);
 
     LogPrint("mempool", "AcceptToMemoryPool : accepted %s (poolsz %u)\n",
            hash.ToString(),
@@ -801,7 +801,7 @@ int CMerkleTx::GetBlocksToMaturity() const
 
 bool CMerkleTx::AcceptToMemoryPool(bool fLimitFree)
 {
-    return ::AcceptToMemoryPool(mempool, *this, fLimitFree, NULL);
+    return ::AcceptToMemoryPool(mempool, *this, fLimitFree, nullptr);
 }
 
 
@@ -1019,7 +1019,7 @@ unsigned int DarkGravityWave(const CBlockIndex* pindexLast, bool fProofOfStake)
     arith_uint256 PastDifficultyAverage;
     arith_uint256 PastDifficultyAveragePrev;
 
-            if (BlockLastSolved == NULL || BlockLastSolved->nHeight == 0 || BlockLastSolved->nHeight < PastBlocksMax) {
+            if (BlockLastSolved == nullptr || BlockLastSolved->nHeight == 0 || BlockLastSolved->nHeight < PastBlocksMax) {
                 return nProofOfWorkLimit.GetCompact();
             }
 
@@ -1090,7 +1090,7 @@ bool CheckProofOfWork(uint256 hash, unsigned int nBits)
 bool IsInitialBlockDownload()
 {
     LOCK(cs_main);
-    if (pindexBest == NULL || nBestHeight < Checkpoints::GetTotalBlocksEstimate())
+    if (pindexBest == nullptr || nBestHeight < Checkpoints::GetTotalBlocksEstimate())
         return true;
     static int64_t nLastUpdate;
     static CBlockIndex* pindexLastBest;
@@ -1648,7 +1648,7 @@ bool static Reorganize(CTxDB& txdb, CBlockIndex* pindexNew)
     // Disconnect shorter branch
     for (CBlockIndex* pindex : vDisconnect)
         if (pindex->pprev)
-            pindex->pprev->pnext = NULL;
+            pindex->pprev->pnext = nullptr;
 
     // Connect longer branch
     for (CBlockIndex* pindex : vConnect)
@@ -1657,7 +1657,7 @@ bool static Reorganize(CTxDB& txdb, CBlockIndex* pindexNew)
 
     // Resurrect memory transactions that were in the disconnected branch
     for (CTransaction& tx : vResurrect)
-        AcceptToMemoryPool(mempool, tx, false, NULL);
+        AcceptToMemoryPool(mempool, tx, false, nullptr);
 
     // Delete redundant memory transactions that are in the connected branch
     for (CTransaction& tx : vDelete) {
@@ -1703,7 +1703,7 @@ bool CBlock::SetBestChain(CTxDB& txdb, CBlockIndex* pindexNew)
     if (!txdb.TxnBegin())
         return error("SetBestChain() : TxnBegin failed");
 
-    if (pindexGenesisBlock == NULL && hash == Params().HashGenesisBlock())
+    if (pindexGenesisBlock == nullptr && hash == Params().HashGenesisBlock())
     {
         txdb.WriteHashBestChain(hash);
         if (!txdb.TxnCommit())
@@ -1772,7 +1772,7 @@ bool CBlock::SetBestChain(CTxDB& txdb, CBlockIndex* pindexNew)
     // New best block
     hashBestChain = hash;
     pindexBest = pindexNew;
-    pblockindexFBBHLast = NULL;
+    pblockindexFBBHLast = nullptr;
     nBestHeight = pindexBest->nHeight;
     nBestChainTrust = pindexNew->nChainTrust;
     nTimeBestReceived = GetTime();
@@ -1791,7 +1791,7 @@ bool CBlock::SetBestChain(CTxDB& txdb, CBlockIndex* pindexNew)
     {
         int nUpgraded = 0;
         const CBlockIndex* pindex = pindexBest;
-        for (int i = 0; i < 100 && pindex != NULL; i++)
+        for (int i = 0; i < 100 && pindex != nullptr; i++)
         {
             if (pindex->nVersion > CBlock::CURRENT_VERSION)
                 ++nUpgraded;
@@ -2129,7 +2129,7 @@ uint256 CBlockIndex::GetBlockTrust() const
 bool CBlockIndex::IsSuperMajority(int minVersion, const CBlockIndex* pstart, unsigned int nRequired, unsigned int nToCheck)
 {
     unsigned int nFound = 0;
-    for (unsigned int i = 0; i < nToCheck && nFound < nRequired && pstart != NULL; i++)
+    for (unsigned int i = 0; i < nToCheck && nFound < nRequired && pstart != nullptr; i++)
     {
         if (pstart->nVersion >= minVersion)
             ++nFound;
@@ -2410,16 +2410,16 @@ static fs::path BlockFilePath(unsigned int nFile)
 FILE* OpenBlockFile(unsigned int nFile, unsigned int nBlockPos, const char* pszMode)
 {
     if ((nFile < 1) || (nFile == (unsigned int) -1))
-        return NULL;
+        return nullptr;
     FILE* file = fopen(BlockFilePath(nFile).string().c_str(), pszMode);
     if (!file)
-        return NULL;
+        return nullptr;
     if (nBlockPos != 0 && !strchr(pszMode, 'a') && !strchr(pszMode, 'w'))
     {
         if (fseek(file, nBlockPos, SEEK_SET) != 0)
         {
             fclose(file);
-            return NULL;
+            return nullptr;
         }
     }
     return file;
@@ -2434,9 +2434,9 @@ FILE* AppendBlockFile(unsigned int& nFileRet)
     {
         FILE* file = OpenBlockFile(nCurrentBlockFile, 0, "ab");
         if (!file)
-            return NULL;
+            return nullptr;
         if (fseek(file, 0, SEEK_END) != 0)
-            return NULL;
+            return nullptr;
         // FAT32 file size max 4GB, fseek and ftell max 2GB, so we must stay under 2GB
         if (ftell(file) < (long)(0x7F000000 - MAX_SIZE))
         {
@@ -2606,7 +2606,7 @@ bool LoadExternalBlockFile(FILE* fileIn)
                     CBlock block;
                     blkdat >> block;
                     LOCK(cs_main);
-                    if (ProcessBlock(NULL,&block))
+                    if (ProcessBlock(nullptr,&block))
                     {
                         nLoaded++;
                         nPos += 4 + nSize;
@@ -3137,7 +3137,7 @@ bool static ProcessMessage(CNode* pfrom, std::string strCommand, CDataStream& vR
 
         LOCK(cs_main);
 
-        CBlockIndex* pindex = NULL;
+        CBlockIndex* pindex = nullptr;
         if (locator.IsNull())
         {
             // If locator is null, return the hashStop block
@@ -3486,7 +3486,7 @@ bool ProcessMessages(CNode* pfrom)
         catch (std::exception& e) {
             PrintExceptionContinue(&e, "ProcessMessages()");
         } catch (...) {
-            PrintExceptionContinue(NULL, "ProcessMessages()");
+            PrintExceptionContinue(nullptr, "ProcessMessages()");
         }
 
         if (!fRet)

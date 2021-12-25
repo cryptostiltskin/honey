@@ -70,7 +70,7 @@ static void init_blockindex(leveldb::Options& options, bool fRemoveOld = false, 
 CTxDB::CTxDB(const char* pszMode)
 {
     assert(pszMode);
-    activeBatch = NULL;
+    activeBatch = nullptr;
     fReadOnly = (!strchr(pszMode, '+') && !strchr(pszMode, 'w'));
 
     if (txdb) {
@@ -98,9 +98,9 @@ CTxDB::CTxDB(const char* pszMode)
 
             // Leveldb instance destruction
             delete txdb;
-            txdb = pdb = NULL;
+            txdb = pdb = nullptr;
             delete activeBatch;
-            activeBatch = NULL;
+            activeBatch = nullptr;
 
             init_blockindex(options, true, true); // Remove directory and create new database
             pdb = txdb;
@@ -125,13 +125,13 @@ CTxDB::CTxDB(const char* pszMode)
 void CTxDB::Close()
 {
     delete txdb;
-    txdb = pdb = NULL;
+    txdb = pdb = nullptr;
     delete options.filter_policy;
-    options.filter_policy = NULL;
+    options.filter_policy = nullptr;
     delete options.block_cache;
-    options.block_cache = NULL;
+    options.block_cache = nullptr;
     delete activeBatch;
-    activeBatch = NULL;
+    activeBatch = nullptr;
 }
 
 bool CTxDB::TxnBegin()
@@ -146,7 +146,7 @@ bool CTxDB::TxnCommit()
     assert(activeBatch);
     leveldb::Status status = pdb->Write(leveldb::WriteOptions(), activeBatch);
     delete activeBatch;
-    activeBatch = NULL;
+    activeBatch = nullptr;
     if (!status.ok()) {
         LogPrintf("LevelDB batch commit failure: %s\n", status.ToString());
         return false;
@@ -282,7 +282,7 @@ bool CTxDB::WriteBestInvalidTrust(uint256 bnBestInvalidTrust)
 static CBlockIndex *InsertBlockIndex(uint256 hash)
 {
     if (hash == 0)
-        return NULL;
+        return nullptr;
 
     // Return existing
     std::map<uint256, CBlockIndex*>::iterator mi = mapBlockIndex.find(hash);
@@ -355,7 +355,7 @@ bool CTxDB::LoadBlockIndex()
         pindexNew->nNonce         = diskindex.nNonce;
 
         // Watch for genesis block
-        if (pindexGenesisBlock == NULL && blockHash == Params().HashGenesisBlock())
+        if (pindexGenesisBlock == nullptr && blockHash == Params().HashGenesisBlock())
             pindexGenesisBlock = pindexNew;
 
         if (!pindexNew->CheckIndex()) {
@@ -391,7 +391,7 @@ bool CTxDB::LoadBlockIndex()
     // Load hashBestChain pointer to end of best chain
     if (!ReadHashBestChain(hashBestChain))
     {
-        if (pindexGenesisBlock == NULL)
+        if (pindexGenesisBlock == nullptr)
             return true;
         return error("CTxDB::LoadBlockIndex() : hashBestChain not loaded");
     }
@@ -418,7 +418,7 @@ bool CTxDB::LoadBlockIndex()
     if (nCheckDepth > nBestHeight)
         nCheckDepth = nBestHeight;
     LogPrintf("Verifying last %i blocks at level %i\n", nCheckDepth, nCheckLevel);
-    CBlockIndex* pindexFork = NULL;
+    CBlockIndex* pindexFork = nullptr;
     std::map<std::pair<unsigned int, unsigned int>, CBlockIndex*> mapBlockPos;
     for (CBlockIndex* pindex = pindexBest; pindex && pindex->pprev; pindex = pindex->pprev)
     {

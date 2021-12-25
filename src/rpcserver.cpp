@@ -37,10 +37,10 @@
 static std::string strRPCUserColonPass;
 
 // These are created by StartRPCThreads, destroyed in StopRPCThreads
-static boost::asio::io_service* rpc_io_service = NULL;
+static boost::asio::io_service* rpc_io_service = nullptr;
 static std::map<std::string, boost::shared_ptr<boost::asio::deadline_timer> > deadlineTimers;
-static boost::asio::ssl::context* rpc_ssl_context = NULL;
-static boost::thread_group* rpc_worker_group = NULL;
+static boost::asio::ssl::context* rpc_ssl_context = nullptr;
+static boost::thread_group* rpc_worker_group = nullptr;
 
 void RPCTypeCheck(const json_spirit::Array& params,
                   const std::list<json_spirit::Value_type>& typesExpected,
@@ -314,7 +314,7 @@ const CRPCCommand *CRPCTable::operator[](std::string name) const
 {
     std::map<std::string, const CRPCCommand*>::const_iterator it = mapCommands.find(name);
     if (it == mapCommands.end())
-        return NULL;
+        return nullptr;
     return (*it).second;
 }
 
@@ -500,7 +500,7 @@ void StartRPCThreads()
         strRPCUserColonPass = mapArgs["-rpcuser"] + ":" + mapArgs["-rpcpassword"];
     }
 
-    assert(rpc_io_service == NULL);
+    assert(rpc_io_service == nullptr);
     rpc_io_service = new boost::asio::io_service();
     rpc_ssl_context = new boost::asio::ssl::context(boost::asio::ssl::context::sslv23);
 
@@ -520,7 +520,7 @@ void StartRPCThreads()
         if (fs::exists(pathPKFile)) rpc_ssl_context->use_private_key_file(pathPKFile.string(), boost::asio::ssl::context::pem);
         else LogPrintf("ThreadRPCServer ERROR: missing server private key file %s\n", pathPKFile.string());
 
-        std::string strCiphers = GetArg("-rpcsslciphers", "TLSv1.2+HIGH:TLSv1+HIGH:!SSLv2:!aNULL:!eNULL:!3DES:@STRENGTH");
+        std::string strCiphers = GetArg("-rpcsslciphers", "TLSv1.2+HIGH:TLSv1+HIGH:!SSLv2:!anullptr:!enullptr:!3DES:@STRENGTH");
         SSL_CTX_set_cipher_list(rpc_ssl_context->native_handle(), strCiphers.c_str());
     }
 
@@ -589,16 +589,16 @@ void StartRPCThreads()
 
 void StopRPCThreads()
 {
-    if (rpc_io_service == NULL) return;
+    if (rpc_io_service == nullptr) return;
 
     deadlineTimers.clear();
     DeleteAuthCookie();
     rpc_io_service->stop();
-    if (rpc_worker_group != NULL)
+    if (rpc_worker_group != nullptr)
         rpc_worker_group->join_all();
-    delete rpc_worker_group; rpc_worker_group = NULL;
-    delete rpc_ssl_context; rpc_ssl_context = NULL;
-    delete rpc_io_service; rpc_io_service = NULL;
+    delete rpc_worker_group; rpc_worker_group = nullptr;
+    delete rpc_ssl_context; rpc_ssl_context = nullptr;
+    delete rpc_io_service; rpc_io_service = nullptr;
 }
 
 void RPCRunHandler(const boost::system::error_code& err, std::function<void(void)> func)
@@ -609,7 +609,7 @@ void RPCRunHandler(const boost::system::error_code& err, std::function<void(void
 
 void RPCRunLater(const std::string& name, std::function<void(void)> func, int64_t nSeconds)
 {
-    assert(rpc_io_service != NULL);
+    assert(rpc_io_service != nullptr);
 
     if (deadlineTimers.count(name) == 0)
     {

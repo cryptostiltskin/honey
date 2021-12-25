@@ -109,7 +109,7 @@ bool AppInit(int argc, char* argv[])
     catch (std::exception& e) {
         PrintException(&e, "AppInit()");
     } catch (...) {
-        PrintException(NULL, "AppInit()");
+        PrintException(nullptr, "AppInit()");
     }
 
     if (!fRet)

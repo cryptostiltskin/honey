@@ -55,7 +55,7 @@ MacDockIconHandler::MacDockIconHandler() : QObject()
     this->m_dockIconClickEventHandler = [[DockIconClickEventHandler alloc] initWithDockIconHandler:this];
     this->m_dummyWidget = new QWidget();
     this->m_dockMenu = new QMenu(this->m_dummyWidget);
-    this->setMainWindow(NULL);
+    this->setMainWindow(nullptr);
 #if QT_VERSION < 0x050000
     qt_mac_set_dock_menu(this->m_dockMenu);
 #endif
@@ -70,7 +70,7 @@ MacDockIconHandler::~MacDockIconHandler()
 {
     [this->m_dockIconClickEventHandler release];
     delete this->m_dummyWidget;
-    this->setMainWindow(NULL);
+    this->setMainWindow(nullptr);
 }
 
 QMenu *MacDockIconHandler::dockMenu()
@@ -113,7 +113,7 @@ void MacDockIconHandler::setIcon(const QIcon &icon)
 
 MacDockIconHandler *MacDockIconHandler::instance()
 {
-    static MacDockIconHandler *s_instance = NULL;
+    static MacDockIconHandler *s_instance = nullptr;
     if (!s_instance)
         s_instance = new MacDockIconHandler();
     return s_instance;

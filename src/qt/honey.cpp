@@ -110,13 +110,13 @@ static void handleRunawayException(std::exception *e)
 #if QT_VERSION < 0x050000
 void DebugMessageHandler(QtMsgType type, const char * msg)
 {
-    const char *category = (type == QtDebugMsg) ? "qt" : NULL;
+    const char *category = (type == QtDebugMsg) ? "qt" : nullptr;
     LogPrint(category, "GUI: %s\n", msg);
 }
 #else
 void DebugMessageHandler(QtMsgType type, const QMessageLogContext& context, const QString &msg)
 {
-    const char *category = (type == QtDebugMsg) ? "qt" : NULL;
+    const char *category = (type == QtDebugMsg) ? "qt" : nullptr;
     LogPrint(category, "GUI: %s\n", msg.toStdString());
 }
 #endif
@@ -312,7 +312,7 @@ int main(int argc, char *argv[])
     } catch (std::exception& e) {
         handleRunawayException(&e);
     } catch (...) {
-        handleRunawayException(NULL);
+        handleRunawayException(nullptr);
     }
     return 0;
 }
